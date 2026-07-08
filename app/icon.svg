@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <rect width="100" height="100" rx="20" fill="#DE2910"/>
+  <g transform="translate(50,50)" fill="#ffffff">
+    <!-- 5 pinwheel Bauhinia petals, each with a red stripe like the HK flag -->
+    <g transform="rotate(0)">
+      <path d="M0,0 C 7,-15 5,-35 0,-43 C -9,-35 -13,-16 0,0 Z"/>
+      <path d="M0,-4 C 3,-16 2,-31 0,-40 C -3,-31 -4,-17 0,-4 Z" fill="#DE2910"/>
+    </g>
+    <g transform="rotate(72)">
+      <path d="M0,0 C 7,-15 5,-35 0,-43 C -9,-35 -13,-16 0,0 Z"/>
+      <path d="M0,-4 C 3,-16 2,-31 0,-40 C -3,-31 -4,-17 0,-4 Z" fill="#DE2910"/>
+    </g>
+    <g transform="rotate(144)">
+      <path d="M0,0 C 7,-15 5,-35 0,-43 C -9,-35 -13,-16 0,0 Z"/>
+      <path d="M0,-4 C 3,-16 2,-31 0,-40 C -3,-31 -4,-17 0,-4 Z" fill="#DE2910"/>
+    </g>
+    <g transform="rotate(216)">
+      <path d="M0,0 C 7,-15 5,-35 0,-43 C -9,-35 -13,-16 0,0 Z"/>
+      <path d="M0,-4 C 3,-16 2,-31 0,-40 C -3,-31 -4,-17 0,-4 Z" fill="#DE2910"/>
+    </g>
+    <g transform="rotate(288)">
+      <path d="M0,0 C 7,-15 5,-35 0,-43 C -9,-35 -13,-16 0,0 Z"/>
+      <path d="M0,-4 C 3,-16 2,-31 0,-40 C -3,-31 -4,-17 0,-4 Z" fill="#DE2910"/>
+    </g>
+    <circle r="4" fill="#ffffff"/>
+  </g>
+</svg>
