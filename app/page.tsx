@@ -18,9 +18,13 @@ export default async function Home() {
   const events = await getEvents();
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-2xl font-bold tracking-tight">
-        Hong Kong &amp; Nearby Tech Events
-      </h1>
+      <div className="flex items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icon.svg" alt="" className="h-9 w-9 rounded-lg" />
+        <h1 className="text-2xl font-bold tracking-tight">
+          Hong Kong &amp; Nearby Tech Events
+        </h1>
+      </div>
       <p className="mt-1 text-sm text-neutral-500">
         AI, startup, hackathon &amp; buildathon events. Biggest and most
         relevant first. {events.length} upcoming.

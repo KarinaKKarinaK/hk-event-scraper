@@ -1,48 +1,34 @@
+<img src="app/icon.svg" width="72" alt="logo" />
+
 # Hong Kong & Nearby Tech Events
 
-A simple web app that scrapes tech, startup, hackathon, buildathon and robotics
-events across Hong Kong and nearby hubs (Taipei), ranked with the biggest and
-most relevant ones on top.
+Ready to use: **[hk-event-scraper.vercel.app](https://hk-event-scraper.vercel.app)**
 
-**Live app:** https://hk-event-scraper.vercel.app
+Finds tech, startup, hackathon and robotics events in Hong Kong and nearby Taipei,
+with the biggest and most relevant ones at the top. Live data, no setup, no API keys.
 
-## Sources
+## Where the events come from
 
-- **Luma** discover pages — Hong Kong and Taipei (the nearby cities Luma actually
-  covers; Shenzhen/Guangzhou/Macau have no Luma discover page).
-- **Devpost** — hackathons across robotics, hardware, AI, blockchain and fintech,
-  including big online ones (500+ signups) that HK builders realistically join.
+- **Luma** for Hong Kong and Taipei local events.
+- **Devpost** for hackathons in robotics, hardware, AI, blockchain and fintech,
+  including large online ones that Hong Kong builders can join.
 
-No API keys required.
+The page re-fetches every time you open it, so events are always current and past
+ones never show.
 
-## Ranking
-
-Events are scored by attendee/registration count plus keyword and host boosts
-(hackathon, summit, robotics, AI House, etc.), with a home boost so Hong Kong
-events stay near the top. Only upcoming events are shown — the page re-fetches
-live on every open, so nothing is stale.
-
-## Run locally
+## Run it locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000.
+Then open http://localhost:3000.
 
-## Deploy
-
-Deployed on Vercel. `main` is the source of truth; deploys are triggered with:
-
-```bash
-vercel --prod
-```
-
-## Tweaking
+## Change what it shows
 
 Everything lives in `lib/events.ts`:
 
-- `LUMA_PLACES` — add/remove cities (needs the Luma `discplace-...` id).
-- `DEVPOST_TERMS` — hackathon search topics.
-- `PRESTIGE` / `rank()` — ranking keywords and scoring.
+- `LUMA_PLACES` for which cities to include.
+- `DEVPOST_TERMS` for hackathon topics.
+- `rank()` for how events are scored and ordered.
