@@ -37,7 +37,11 @@ export default async function Home() {
               href={e.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex gap-4 rounded-xl border border-neutral-200 p-4 transition hover:border-neutral-400 hover:shadow-sm dark:border-neutral-800 dark:hover:border-neutral-600"
+              className={
+                e.featured
+                  ? "flex gap-4 rounded-xl border-2 border-[#DE2910] p-4 shadow-sm transition hover:shadow-md"
+                  : "flex gap-4 rounded-xl border border-neutral-200 p-4 transition hover:border-neutral-400 hover:shadow-sm dark:border-neutral-800 dark:hover:border-neutral-600"
+              }
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 text-xs text-neutral-500">
@@ -45,6 +49,11 @@ export default async function Home() {
                   <span className="rounded bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
                     {e.source}
                   </span>
+                  {e.featured ? (
+                    <span className="rounded bg-[#DE2910] px-1.5 py-0.5 font-medium text-white">
+                      Top pick
+                    </span>
+                  ) : null}
                 </div>
                 <h2 className="mt-1 truncate text-base font-semibold">
                   {e.title}

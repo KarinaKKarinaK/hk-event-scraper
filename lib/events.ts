@@ -13,6 +13,7 @@ export type Event = {
   attendees: number | null;
   source: "Luma" | "Devpost" | "Meetup";
   score: number;
+  featured?: boolean; // top-ranked (big/prestigious) -> highlighted in the UI
 };
 
 const UA =
@@ -199,9 +200,27 @@ export async function getEvents(): Promise<Event[]> {
     meetup(),
   ]);
   const all = [...lumaResults.flat(), ...devpostResults, ...meetupResults];
-  // dedupe by id, sort by score desc then soonest
   const seen = new Set<string>();
-  return all
-    .filter((e) => e.id && !seen.has(e.id) && seen.add(e.id))
-    .sort((a, b) => b.score - a.score || (a.start > b.start ? 1 : -1));
+  const unique = all.filter((e) => e.id && !seen.has(e.id) && seen.add(e.id));
+  // Flag the 8 highest-scoring (biggest/most prestigious) as featured.
+  const topIds = new Set(
+    [...unique].sort((a, b) => b.score - a.score).slice(0, 8).map((e) => e.id),
+  );
+  // Display chronologically, soonest first.
+  return unique
+    .map((e) => ({ ...e, featured: topIds.has(e.id) }))
+    .sort((a, b) => startMs(a.start) - startMs(b.start));
+}
+
+// Parse a sortable timestamp. Luma/Meetup give ISO; Devpost gives text like
+// "Mar 09 - 31, 2026" -> pull the first month/day + trailing year. Unknown -> end.
+function startMs(s: string): number {
+  const t = Date.parse(s);
+  if (!isNaN(t)) return t;
+  const m = s.match(/^([A-Za-z]{3}\s+\d{1,2}).*?(\d{4})/);
+  if (m) {
+    const t2 = Date.parse(`${m[1]} ${m[2]}`);
+    if (!isNaN(t2)) return t2;
+  }
+  return Infinity;
 }
