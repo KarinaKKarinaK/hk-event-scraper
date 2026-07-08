@@ -11,6 +11,7 @@ function fmtDate(s: string) {
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Asia/Hong_Kong", // always show HK local time
   });
 }
 
@@ -39,7 +40,7 @@ export default async function Home() {
               rel="noopener noreferrer"
               className={
                 e.featured
-                  ? "flex gap-4 rounded-xl border-2 border-[#DE2910] p-4 shadow-sm transition hover:shadow-md"
+                  ? "flex gap-4 rounded-xl border border-red-200/60 p-4 shadow-[0_0_16px_rgba(222,41,16,0.14)] transition hover:shadow-[0_0_22px_rgba(222,41,16,0.22)] dark:border-red-900/30"
                   : "flex gap-4 rounded-xl border border-neutral-200 p-4 transition hover:border-neutral-400 hover:shadow-sm dark:border-neutral-800 dark:hover:border-neutral-600"
               }
             >
