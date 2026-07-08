@@ -20,7 +20,6 @@ export type Event = {
 const LUMA_PLACES: Record<string, string> = {
   "Hong Kong": "discplace-z9B5Guglh2WINA1",
   Taipei: "discplace-fi7MDZq99wfKWfa",
-  Singapore: "discplace-mUbtdfNjfWaLQ72",
 };
 
 // Home turf — nudge HK/Shenzhen events above equally-sized regional ones.
