@@ -1,6 +1,6 @@
 import { getEvents } from "@/lib/events";
 
-export const revalidate = 21600; // refresh every 6h
+export const dynamic = "force-dynamic"; // re-fetch live on every page open
 
 function fmtDate(s: string) {
   const d = new Date(s);
@@ -19,7 +19,7 @@ export default async function Home() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
       <h1 className="text-2xl font-bold tracking-tight">
-        HK &amp; Shenzhen Tech Events
+        Hong Kong &amp; Nearby Tech Events
       </h1>
       <p className="mt-1 text-sm text-neutral-500">
         AI, startup, hackathon &amp; buildathon events. Biggest and most

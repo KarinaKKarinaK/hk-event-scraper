@@ -1,6 +1,6 @@
 // Aggregates tech/startup/hackathon events for HK + nearby cities.
 // Sources: Luma discover (HK city page) + Devpost hackathons. No API keys.
-// ponytail: no DB, no cron. Next ISR (revalidate) refreshes this on a timer.
+// ponytail: no DB, no cache. Page is force-dynamic, so every open re-fetches live.
 
 export type Event = {
   id: string;
@@ -45,7 +45,7 @@ async function luma(city: string, placeId: string): Promise<Event[]> {
   const url = `https://api.lu.ma/discover/get-paginated-events?discover_place_api_id=${placeId}&period=future&pagination_limit=200`;
   const res = await fetch(url, {
     headers: { Accept: "application/json" },
-    next: { revalidate: 21600 },
+    cache: "no-store",
   });
   if (!res.ok) return [];
   const data = await res.json();
@@ -76,7 +76,7 @@ async function devpost(): Promise<Event[]> {
     DEVPOST_TERMS.map(async (q) => {
       const res = await fetch(
         `https://devpost.com/api/hackathons?search=${encodeURIComponent(q)}&status[]=upcoming&status[]=open&page=1`,
-        { headers: { Accept: "application/json" }, next: { revalidate: 21600 } },
+        { headers: { Accept: "application/json" }, cache: "no-store" },
       );
       return res.ok ? ((await res.json()).hackathons ?? []) : [];
     }),
