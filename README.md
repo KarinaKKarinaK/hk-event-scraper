@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hong Kong & Nearby Tech Events
 
-## Getting Started
+A simple web app that scrapes tech, startup, hackathon, buildathon and robotics
+events across Hong Kong and nearby hubs (Taipei), ranked with the biggest and
+most relevant ones on top.
 
-First, run the development server:
+**Live app:** https://hk-event-scraper.vercel.app
+
+## Sources
+
+- **Luma** discover pages — Hong Kong and Taipei (the nearby cities Luma actually
+  covers; Shenzhen/Guangzhou/Macau have no Luma discover page).
+- **Devpost** — hackathons across robotics, hardware, AI, blockchain and fintech,
+  including big online ones (500+ signups) that HK builders realistically join.
+
+No API keys required.
+
+## Ranking
+
+Events are scored by attendee/registration count plus keyword and host boosts
+(hackathon, summit, robotics, AI House, etc.), with a home boost so Hong Kong
+events stay near the top. Only upcoming events are shown — the page re-fetches
+live on every open, so nothing is stale.
+
+## Run locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Deployed on Vercel. `main` is the source of truth; deploys are triggered with:
 
-## Learn More
+```bash
+vercel --prod
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Tweaking
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Everything lives in `lib/events.ts`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `LUMA_PLACES` — add/remove cities (needs the Luma `discplace-...` id).
+- `DEVPOST_TERMS` — hackathon search topics.
+- `PRESTIGE` / `rank()` — ranking keywords and scoring.
