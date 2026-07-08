@@ -40,7 +40,7 @@ export default async function Home() {
               rel="noopener noreferrer"
               className={
                 e.featured
-                  ? "flex gap-4 rounded-xl border border-red-200/60 p-4 shadow-[0_0_16px_rgba(222,41,16,0.14)] transition hover:shadow-[0_0_22px_rgba(222,41,16,0.22)] dark:border-red-900/30"
+                  ? "flex gap-4 rounded-xl border border-red-200/60 p-4 shadow-[0_0_7px_rgba(222,41,16,0.16)] transition hover:shadow-[0_0_10px_rgba(222,41,16,0.24)] dark:border-red-900/30"
                   : "flex gap-4 rounded-xl border border-neutral-200 p-4 transition hover:border-neutral-400 hover:shadow-sm dark:border-neutral-800 dark:hover:border-neutral-600"
               }
             >
