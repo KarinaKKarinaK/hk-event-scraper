@@ -11,9 +11,21 @@ export type Event = {
   url: string;
   image: string | null;
   attendees: number | null;
-  source: "Luma" | "Devpost";
+  source: "Luma" | "Devpost" | "Meetup";
   score: number;
 };
+
+const UA =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
+
+// Meetup find-page keywords (Hong Kong local groups: AI, robotics, dev, startup...).
+const MEETUP_KEYWORDS = [
+  "artificial intelligence",
+  "robotics",
+  "startup",
+  "blockchain",
+  "developer",
+];
 
 // Luma discover place IDs (resolved from luma.com/<slug> pages).
 // Only cities Luma actually has a discover page for. SZ/GZ/Macau aren't on Luma.
@@ -73,13 +85,15 @@ async function devpost(): Promise<Event[]> {
   // Devpost has no geo filter. Keep in-region events, plus BIG online hackathons
   // (>=500 registrations) which HK builders realistically join. Drops student-hack noise.
   const results = await Promise.all(
-    DEVPOST_TERMS.map(async (q) => {
-      const res = await fetch(
-        `https://devpost.com/api/hackathons?search=${encodeURIComponent(q)}&status[]=upcoming&status[]=open&page=1`,
-        { headers: { Accept: "application/json" }, cache: "no-store" },
-      );
-      return res.ok ? ((await res.json()).hackathons ?? []) : [];
-    }),
+    DEVPOST_TERMS.flatMap((q) =>
+      [1, 2].map(async (page) => {
+        const res = await fetch(
+          `https://devpost.com/api/hackathons?search=${encodeURIComponent(q)}&status[]=upcoming&status[]=open&page=${page}`,
+          { headers: { Accept: "application/json" }, cache: "no-store" },
+        );
+        return res.ok ? ((await res.json()).hackathons ?? []) : [];
+      }),
+    ),
   );
   const out: Event[] = [];
   const seen = new Set<string>();
@@ -107,6 +121,68 @@ async function devpost(): Promise<Event[]> {
   return out;
 }
 
+async function meetup(): Promise<Event[]> {
+  // Meetup has no open API; scrape the Hong Kong find pages' embedded __NEXT_DATA__.
+  // ponytail: regex-resolve photo/group refs from the raw blob instead of walking Apollo cache.
+  const now = Date.now();
+  const results = await Promise.all(
+    MEETUP_KEYWORDS.map(async (kw) => {
+      try {
+        const res = await fetch(
+          `https://www.meetup.com/find/?keywords=${encodeURIComponent(kw)}&location=hk--Hong%20Kong&source=EVENTS`,
+          { headers: { "User-Agent": UA, Accept: "text/html" }, cache: "no-store" },
+        );
+        if (!res.ok) return [];
+        const html = await res.text();
+        const m = html.match(
+          /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/,
+        );
+        if (!m) return [];
+        const raw = m[1];
+        const data = JSON.parse(raw);
+        const nodes: any[] = [];
+        const walk = (o: any) => {
+          if (o && typeof o === "object") {
+            if (o.__typename === "Event" && o.title) nodes.push(o);
+            for (const v of Object.values(o)) walk(v);
+          }
+        };
+        walk(data);
+        const resolve = (ref: string, field: string) => {
+          const r = raw.match(
+            new RegExp(`"${ref}":\\{[^}]*"${field}":"([^"]+)"`),
+          );
+          return r ? r[1].replace(/\\u002F/g, "/") : null;
+        };
+        return nodes.map((e) => {
+          const image = e.featuredEventPhoto?.__ref
+            ? resolve(e.featuredEventPhoto.__ref, "highResUrl")
+            : null;
+          const host = e.group?.__ref
+            ? (resolve(e.group.__ref, "name") ?? "Meetup")
+            : "Meetup";
+          const attendees = e.rsvps?.totalCount ?? null;
+          return {
+            id: `mu-${e.id}`,
+            title: e.title,
+            host,
+            city: e.venue?.city || "Hong Kong",
+            start: e.dateTime,
+            url: e.eventUrl,
+            image,
+            attendees,
+            source: "Meetup" as const,
+            score: rank(e.title, host, attendees ?? 0) + 10, // home turf
+          };
+        });
+      } catch {
+        return [];
+      }
+    }),
+  );
+  return results.flat().filter((e) => !e.start || new Date(e.start).getTime() > now);
+}
+
 function rank(title: string, host: string, attendees: number): number {
   // Big/prestigious to the top: attendee count (log) + keyword/host boosts.
   let s = Math.log10(attendees + 1) * 20; // 0..~60
@@ -116,10 +192,13 @@ function rank(title: string, host: string, attendees: number): number {
 }
 
 export async function getEvents(): Promise<Event[]> {
-  const lumaResults = await Promise.all(
-    Object.entries(LUMA_PLACES).map(([city, id]) => luma(city, id)),
-  );
-  const all = [...lumaResults.flat(), ...(await devpost())];
+  // Run every source in parallel; total latency = slowest source.
+  const [lumaResults, devpostResults, meetupResults] = await Promise.all([
+    Promise.all(Object.entries(LUMA_PLACES).map(([city, id]) => luma(city, id))),
+    devpost(),
+    meetup(),
+  ]);
+  const all = [...lumaResults.flat(), ...devpostResults, ...meetupResults];
   // dedupe by id, sort by score desc then soonest
   const seen = new Set<string>();
   return all
